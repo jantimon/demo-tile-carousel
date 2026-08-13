@@ -1,0 +1,40 @@
+/* Keyboard parity for the pointer-only behaviour in hover.css.
+   Reuses the preview and recycle keyframes defined there.
+
+   Needs tabindex="0" on .track. On pointer devices the dots are hidden and
+   the track stops being a scroll container, which leaves nothing inside
+   .carousel able to take focus — :focus-within would never match. */
+
+.track:focus-visible {
+  outline: 2px solid #0b5cff;
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* Tabbing into the carousel runs the same preview a hover would.
+     Without this, keyboard users get a static first image and no way to
+     reach the others — the dots are hidden and the track no longer scrolls. */
+  .carousel:focus-within .track {
+    animation: preview var(--loop, 4.5s) ease-in-out infinite;
+  }
+
+  .carousel:focus-within .track > :first-child {
+    animation: recycle var(--loop, 4.5s) infinite;
+  }
+}
+
+/* The pill sits over the active dot, so the default ring can be hard to make
+   out against it. Offset puts it clear of both. */
+.dots a:focus-visible {
+  outline: 2px solid #0b5cff;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel:hover .track,
+  .carousel:hover .track > :first-child,
+  .carousel:focus-within .track,
+  .carousel:focus-within .track > :first-child {
+    animation: none;
+  }
+}

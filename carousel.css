@@ -1,0 +1,34 @@
+.carousel {
+  timeline-scope: --carousel;
+}
+
+.track {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-inline: contain;
+
+  scroll-timeline: --carousel inline;
+
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.track > * {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+
+  display: grid;
+  place-items: center;
+  aspect-ratio: 3 / 2;
+  background: #eee;
+  font: 2rem/1 system-ui, sans-serif;
+}
