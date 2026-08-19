@@ -13,9 +13,13 @@
   }
   h1 { font-size: 1.5rem; margin-bottom: 0.25rem }
   header p { margin-top: 0; color: #666; max-width: 40rem }
-  ul { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-       list-style: none; padding: 0 }
-  li { border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background: #fff }
+  /* min() so a narrow phone can't push a 20rem column past the viewport */
+  ul { display: grid; gap: 1.5rem; list-style: none; padding: 0;
+       grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr)) }
+  /* Each card takes its two rows from the parent grid, so headings of one and
+     two lines still leave every frame starting on the same line. */
+  li { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: 0;
+       border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background: #fff }
   h2 { font-size: 1rem; margin: 0 }
   h2 a { color: inherit }
   .about { margin: 0.25rem 0 0; color: #666; font-size: 0.875rem }
