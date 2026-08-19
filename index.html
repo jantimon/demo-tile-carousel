@@ -2,31 +2,112 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Carousel — responsive</title>
-<link rel="stylesheet" href="carousel.css">
-<link rel="stylesheet" href="dots.css">
-<link rel="stylesheet" href="hover.css">
-<link rel="stylesheet" href="keyboard.css">
+<title>Carousel demos</title>
+<style>
+  body {
+    font: 16px/1.5 system-ui, sans-serif;
+    max-width: 62rem;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    color: #222;
+  }
+  h1 { font-size: 1.5rem; margin-bottom: 0.25rem }
+  header p { margin-top: 0; color: #666; max-width: 40rem }
+  ul { display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+       list-style: none; padding: 0 }
+  li { border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background: #fff }
+  h2 { font-size: 1rem; margin: 0 }
+  h2 a { color: inherit }
+  .about { margin: 0.25rem 0 0; color: #666; font-size: 0.875rem }
+  .head { padding: 0.875rem 1rem }
+  iframe { display: block; width: 100%; height: 380px; border: 0; border-top: 1px solid #eee }
+</style>
 
-<div class="carousel" style="--n: 8">
-  <ul class="track" tabindex="0" aria-label="Product images">
-    <li id="s1">Item 1</li>
-    <li id="s2">Item 2</li>
-    <li id="s3">Item 3</li>
-    <li id="s4">Item 4</li>
-    <li id="s5">Item 5</li>
-    <li id="s6">Item 6</li>
-    <li id="s7">Item 7</li>
-    <li id="s8">Item 8</li>
-  </ul>
-  <nav class="dots" aria-label="Slides">
-    <a href="#s1" aria-label="Slide 1"></a>
-    <a href="#s2" aria-label="Slide 2"></a>
-    <a href="#s3" aria-label="Slide 3"></a>
-    <a href="#s4" aria-label="Slide 4"></a>
-    <a href="#s5" aria-label="Slide 5"></a>
-    <a href="#s6" aria-label="Slide 6"></a>
-    <a href="#s7" aria-label="Slide 7"></a>
-    <a href="#s8" aria-label="Slide 8"></a>
-  </nav>
-</div>
+<header>
+  <h1>Carousel demos</h1>
+  <p>Scroll-driven page indicators, no JavaScript. Swipe inside any frame — or
+  point at one with a mouse, where a few of them trade the dots for a preview
+  loop instead.</p>
+</header>
+
+<ul>
+  <li>
+    <div class="head">
+      <h2><a href="base/">base</a></h2>
+      <p class="about">Pill glides with the finger. One scroll-driven animation.</p>
+    </div>
+    <iframe src="base/" title="base"></iframe>
+  </li>
+
+  <li>
+    <div class="head">
+      <h2><a href="steps/">steps</a></h2>
+      <p class="about">Pill jumps dot to dot at the halfway point, via steps() easing.</p>
+    </div>
+    <iframe src="steps/" title="steps"></iframe>
+  </li>
+
+  <li>
+    <div class="head">
+      <h2><a href="responsive/">responsive</a></h2>
+      <p class="about">Touch: swipe with dots. Pointer: hover previews the first three images.</p>
+    </div>
+    <iframe src="responsive/" title="responsive" loading="lazy"></iframe>
+  </li>
+
+  <li>
+    <div class="head">
+      <h2><a href="pill-dots/">pill-dots</a></h2>
+      <p class="about">The active dot is a wide pill. Every dot animates its own width — no overlay.</p>
+    </div>
+    <iframe src="pill-dots/" title="pill-dots" loading="lazy"></iframe>
+  </li>
+
+  <li>
+    <div class="head">
+      <h2><a href="pill-dots-max/">pill-dots-max</a></h2>
+      <p class="about">Ten slides, five dots. The strip slides under a fixed window; edges are clipped.</p>
+    </div>
+    <iframe src="pill-dots-max/" title="pill-dots-max" loading="lazy"></iframe>
+  </li>
+
+  <li>
+    <div class="head">
+      <h2><a href="pill-dots-max-scale/">pill-dots-max-scale</a></h2>
+      <p class="about">Same window, but the outermost dots are half size instead of cut.</p>
+    </div>
+    <iframe src="pill-dots-max-scale/" title="pill-dots-max-scale" loading="lazy"></iframe>
+  </li>
+
+  <li>
+    <div class="head">
+      <h2><a href="pill-dots-max-scale-out/">pill-dots-max-scale-out</a></h2>
+      <p class="about">Five equal dots at rest. A shrinking one appears in the margin only mid-swipe.</p>
+    </div>
+    <iframe src="pill-dots-max-scale-out/" title="pill-dots-max-scale-out" loading="lazy"></iframe>
+  </li>
+
+  <li>
+    <div class="head">
+      <h2><a href="pill-dots-yak/dist/">pill-dots-yak</a></h2>
+      <p class="about">pill-dots as React components, styled with next-yak. Built output.</p>
+    </div>
+    <iframe src="pill-dots-yak/dist/" title="pill-dots-yak" loading="lazy"></iframe>
+  </li>
+
+  <li>
+    <div class="head">
+      <h2><a href="pill-dots-max-scale-out-yak/dist/">pill-dots-max-scale-out-yak</a></h2>
+      <p class="about">The windowed scale-out indicator as React + next-yak. Built output.</p>
+    </div>
+    <iframe src="pill-dots-max-scale-out-yak/dist/" title="pill-dots-max-scale-out-yak" loading="lazy"></iframe>
+  </li>
+
+  <li>
+    <div class="head">
+      <h2><a href="content-visibility/">content-visibility</a></h2>
+      <p class="about">80 tiles of unpredictable height. Toggle containment and watch the page height drift.</p>
+    </div>
+    <iframe src="content-visibility/" title="content-visibility" loading="lazy"></iframe>
+  </li>
+</ul>

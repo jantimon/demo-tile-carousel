@@ -1,0 +1,89 @@
+/* Each dot animates its own width: small, then a wide pill when its slide is
+   centred, then small again. No overlay element — the dot you see growing is
+   the same anchor you can tap.
+
+   Every dot shares one set of keyframes. What differs is animation-range: the
+   slice of the scroll each dot listens to. A dot peaks one step per position
+   along the scroll and fades out over the step either side, so only two dots
+   ever move at once. */
+
+.dots {
+  --size: 0.5rem;
+  --pill: 1.75rem;
+  --gap: 0.5rem;
+  --pad: 1rem;
+
+  /* one slide of scroll, as a share of the whole scrollable range */
+  --step: calc(100% / (var(--slide-count) - 1));
+
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+  width: fit-content;
+  margin-inline: auto;
+  padding-block: var(--pad);
+}
+
+/* One rule per position. sibling-index() says this in a single line, but it
+   needs Chrome 138 / Safari 26.2 — newer than the scroll timeline this demo
+   already depends on, and a dot that can't read its index falls back to the
+   full timeline and swells along with every other dot. Add rules to go past
+   ten slides. */
+.dots a:nth-child(1) { --sibling-index: 1 }
+.dots a:nth-child(2) { --sibling-index: 2 }
+.dots a:nth-child(3) { --sibling-index: 3 }
+.dots a:nth-child(4) { --sibling-index: 4 }
+.dots a:nth-child(5) { --sibling-index: 5 }
+.dots a:nth-child(6) { --sibling-index: 6 }
+.dots a:nth-child(7) { --sibling-index: 7 }
+.dots a:nth-child(8) { --sibling-index: 8 }
+.dots a:nth-child(9) { --sibling-index: 9 }
+.dots a:nth-child(10) { --sibling-index: 10 }
+
+.dots a {
+  flex: none;
+  width: var(--size);
+  height: var(--size);
+  border-radius: var(--size);
+  background: #dcdcdc;
+
+  animation: pill linear both;
+  animation-timeline: --carousel;
+  animation-range:
+    calc((var(--sibling-index) - 2) * var(--step))
+    calc( var(--sibling-index)      * var(--step));
+}
+
+/* The scroll can't run past either end, so the first and last dot only ever
+   see half a window. Giving them keyframes that begin or end at the peak
+   keeps every range inside 0–100%. */
+.dots a:first-child {
+  animation-name: pill-out;
+  animation-range: 0% var(--step);
+}
+
+.dots a:last-child {
+  animation-name: pill-in;
+  animation-range: calc(100% - var(--step)) 100%;
+}
+
+/* 0% and 100% come from the rule above, so a dot always starts and ends small.
+   The shrinking dot and the growing one cross at the same rate, which keeps
+   the row exactly as wide as it was — a centred row that never jitters. */
+@keyframes pill {
+  50% { width: var(--pill); background: #555 }
+}
+
+@keyframes pill-out {
+  from { width: var(--pill); background: #555 }
+}
+
+@keyframes pill-in {
+  to { width: var(--pill); background: #555 }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dots {
+    display: none;
+  }
+}

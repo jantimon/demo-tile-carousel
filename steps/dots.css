@@ -1,0 +1,40 @@
+.dots {
+  --size: 1rem;
+  --gap: 0.5rem;
+  --pad: 1rem;
+
+  display: flex;
+  gap: var(--gap);
+  width: fit-content;
+  margin-inline: auto;
+  padding-block: var(--pad);
+  position: relative;
+}
+
+.dots a {
+  width: var(--size);
+  aspect-ratio: 1;
+  box-shadow: inset 0 0 0 2px #e8290b;
+}
+
+.dots::after {
+  content: "";
+  position: absolute;
+  top: var(--pad);
+  left: 0;
+  width: var(--size);
+  aspect-ratio: 1;
+  background: #0be893;
+  pointer-events: none;
+
+  /* jump-none gives exactly --n stops, first at 0 and last at 1,
+     so every dot is reachable and the ends are not clipped */
+  animation: pill steps(var(--n), jump-none) both;
+  animation-timeline: --carousel;
+}
+
+@keyframes pill {
+  to {
+    translate: calc((var(--n) - 1) * (var(--size) + var(--gap)));
+  }
+}

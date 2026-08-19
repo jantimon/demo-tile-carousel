@@ -1,0 +1,197 @@
+/* pill-dots-max, plus the edge treatment: instead of being sliced by the window
+   boundary, a dot shrinks to nothing on its way out and grows from nothing on
+   its way in. Everything else is unchanged.
+
+   Five animations now, all on the one scroll timeline, all the same shape — a
+   pair of keyframes plus a per-element animation-range:
+
+     pill      a dot swells when its own slide is centred
+     push      a dot stands aside to make room for a pill on its left
+     shift     the strip slides so the pill lands back on the middle slot
+     fade-in   a dot grows in over the two slides it takes to reach the window
+     fade-out  a dot shrinks away over the two slides it takes to leave
+
+   fade-in animates `scale` and fade-out animates `transform`, on purpose: they
+   are two properties, so both can hold a value at once. Two animations on the
+   same property would not work — the later one wins outright, at every moment,
+   not just inside its own range.
+
+   Assumes --slide-count is larger than --max-dots, and an odd --max-dots. */
+
+.dots {
+  --dot: 0.5rem;
+  --pill: 1.75rem;
+  --gap: 0.5rem;
+  --pad: 1rem;
+
+  /* how far apart two dots sit, and the extra room a pill asks for */
+  --pitch: calc(var(--dot) + var(--gap));
+  --extra: calc(var(--pill) - var(--dot));
+
+  /* one slide of scroll, as a share of the whole scrollable range */
+  --step: calc(100% / (var(--slide-count) - 1));
+
+  /* the slot the pill rests on away from the ends: 3rd of 5 */
+  --center: calc((var(--max-dots) + 1) / 2);
+
+  width: calc(
+    var(--max-dots) * var(--dot) + (var(--max-dots) - 1) * var(--gap) + var(--extra)
+  );
+  height: var(--dot);
+  margin-inline: auto;
+  margin-block: var(--pad);
+  overflow: hidden;
+}
+
+/* Holds still until the pill has walked out to the middle slot, then slides one
+   pitch per slide, then holds again for the last slots. Those two holds are
+   what put the first two and the last two pills on the outer positions. */
+.strip {
+  position: relative;
+  height: var(--dot);
+  width: calc(
+    var(--slide-count) * var(--dot) + (var(--slide-count) - 1) * var(--gap) +
+      var(--extra)
+  );
+
+  animation: shift linear both;
+  animation-timeline: --carousel;
+  animation-range:
+    calc((var(--center) - 1) * var(--step))
+    calc((var(--slide-count) - var(--center)) * var(--step));
+}
+
+@keyframes shift {
+  to {
+    translate: calc(-1 * (var(--slide-count) - var(--max-dots)) * var(--pitch));
+  }
+}
+
+/* One rule per position. sibling-index() says this in a single line but needs
+   Chrome 138 / Safari 26.2, newer than the scroll timeline this demo already
+   depends on. Add rules to go past ten slides. */
+.strip a:nth-child(1) { --sibling-index: 1 }
+.strip a:nth-child(2) { --sibling-index: 2 }
+.strip a:nth-child(3) { --sibling-index: 3 }
+.strip a:nth-child(4) { --sibling-index: 4 }
+.strip a:nth-child(5) { --sibling-index: 5 }
+.strip a:nth-child(6) { --sibling-index: 6 }
+.strip a:nth-child(7) { --sibling-index: 7 }
+.strip a:nth-child(8) { --sibling-index: 8 }
+.strip a:nth-child(9) { --sibling-index: 9 }
+.strip a:nth-child(10) { --sibling-index: 10 }
+
+/* The ranges live in custom properties so the rules below can retune one of
+   them without restating the rest. */
+.strip a {
+  --pill-range:
+    calc((var(--sibling-index) - 2) * var(--step))
+    calc(var(--sibling-index) * var(--step));
+  --push-range:
+    calc((var(--sibling-index) - 2) * var(--step))
+    calc((var(--sibling-index) - 1) * var(--step));
+  --fade-in-range:
+    calc((var(--sibling-index) + var(--center) - var(--max-dots) - 2) * var(--step))
+    calc((var(--sibling-index) + var(--center) - var(--max-dots)) * var(--step));
+  --fade-out-range:
+    calc((var(--sibling-index) + var(--center) - 3) * var(--step))
+    calc((var(--sibling-index) + var(--center) - 1) * var(--step));
+
+  position: absolute;
+  top: 0;
+  left: calc((var(--sibling-index) - 1) * var(--pitch));
+  width: var(--dot);
+  height: var(--dot);
+  border-radius: var(--dot);
+  background: #dcdcdc;
+
+  animation:
+    pill linear both,
+    push linear both,
+    fade-in linear both,
+    fade-out linear both;
+  animation-timeline: --carousel, --carousel, --carousel, --carousel;
+  animation-range:
+    var(--pill-range),
+    var(--push-range),
+    var(--fade-in-range),
+    var(--fade-out-range);
+}
+
+/* The first --max-dots dots are on screen from the very first slide, so they
+   have no arrival to animate. Likewise the last --max-dots never leave. */
+.strip a:nth-child(-n + 5) {
+  animation-name: pill, push, none, fade-out;
+}
+
+.strip a:nth-child(n + 6) {
+  animation-name: pill, push, fade-in, none;
+}
+
+/* The scroll can't run past either end, so the first and last dot only see half
+   a window and start or end at the peak. Nothing is ever left of the first dot,
+   so it is never pushed — which also keeps every range inside 0-100%.
+   Their fades are cut to the stretch where the strip is actually moving. */
+.strip a:first-child {
+  animation-name: pill-out, none, none, fade-out;
+  --pill-range: 0% var(--step);
+  --fade-out-range:
+    calc((var(--center) - 1) * var(--step))
+    calc(var(--center) * var(--step));
+}
+
+.strip a:last-child {
+  animation-name: pill-in, push, fade-in, none;
+  --pill-range: calc(100% - var(--step)) 100%;
+  --push-range: calc(100% - var(--step)) 100%;
+  --fade-in-range:
+    calc((var(--slide-count) - var(--center) - 1) * var(--step))
+    calc((var(--slide-count) - var(--center)) * var(--step));
+}
+
+/* 0% and 100% come from the rule above, so a dot always starts and ends small. */
+@keyframes pill {
+  50% {
+    width: var(--pill);
+    background: #555;
+  }
+}
+
+@keyframes pill-out {
+  from {
+    width: var(--pill);
+    background: #555;
+  }
+}
+
+@keyframes pill-in {
+  to {
+    width: var(--pill);
+    background: #555;
+  }
+}
+
+/* A dot stands one --extra to the right for as long as the pill is somewhere to
+   its left, and gives that offset up exactly as the pill arrives on it. */
+@keyframes push {
+  from {
+    translate: var(--extra);
+  }
+  to {
+    translate: 0;
+  }
+}
+
+/* Halfway through either ramp the dot is at half size and sitting on the
+   outermost slot — the hint that the row continues past the window. */
+@keyframes fade-in {
+  from {
+    scale: 0;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    transform: scale(0);
+  }
+}

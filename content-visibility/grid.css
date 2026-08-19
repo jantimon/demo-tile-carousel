@@ -1,0 +1,92 @@
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font: 13px/1.35 system-ui, sans-serif;
+  padding-bottom: 5rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 8px;
+  align-items: start;
+}
+
+/* The whole point of the demo: tiles whose height cannot be known up front.
+   --guess deliberately under-shoots; over-shooting never self-corrects. */
+.cv .tile {
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--guess, 200px);
+}
+
+.tile {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.body {
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.variants {
+  display: flex;
+  gap: 3px;
+}
+
+.variants i {
+  width: 12px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid #0003;
+}
+
+.energy {
+  justify-self: start;
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.price {
+  font-weight: 700;
+}
+
+.panel {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 8px 10px;
+  background: #111;
+  color: #eee;
+  font: 11px/1.5 ui-monospace, monospace;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: center;
+}
+
+.panel b {
+  color: #0be893;
+}
+
+.panel button {
+  font: inherit;
+  padding: 3px 8px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #222;
+  color: #eee;
+}

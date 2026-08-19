@@ -1,0 +1,65 @@
+/* Pointer devices only: no swiping, no dots. Hovering previews the first three
+   images in an endless loop instead. Keyed on the pointer rather than the
+   viewport, so a narrow desktop window still previews and a wide tablet
+   still swipes. */
+
+@media (hover: hover) and (pointer: fine) {
+  .carousel {
+    overflow: hidden;
+  }
+
+  .track {
+    /* stops being a scroll container: the slides now overflow into
+       .carousel, which clips them */
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  /* Only the first three take part. Hiding the rest also frees the slot at
+     300% that the recycled slide hops into. */
+  .track > :nth-child(n + 4) {
+    display: none;
+  }
+
+  .carousel:hover .track {
+    animation: preview var(--loop, 4.5s) ease-in-out infinite;
+  }
+
+  .carousel:hover .track > :first-child {
+    animation: recycle var(--loop, 4.5s) infinite;
+  }
+}
+
+/* Three holds, three moves. The last move runs past the third slide onto the
+   recycled first one, so the restart at 0% lands on identical pixels.
+   min() clamps the travel for products with fewer than three images. */
+@keyframes preview {
+  0%, 22% {
+    translate: 0;
+  }
+  33.33%, 55.5% {
+    translate: calc(-100% * min(1, var(--slide-count) - 1));
+  }
+  66.66%, 88.8% {
+    translate: calc(-100% * min(2, var(--slide-count) - 1));
+  }
+  100% {
+    translate: calc(-100% * min(3, var(--slide-count)));
+  }
+}
+
+/* Slide 1 hops to the far end while it sits off-screen left, so the track can
+   keep moving in the same direction into it. step-start makes the hop
+   instant — interpolating would sweep it back across the viewport. */
+@keyframes recycle {
+  0% {
+    translate: 0;
+  }
+  40% {
+    translate: 0;
+    animation-timing-function: step-start;
+  }
+  100% {
+    translate: calc(100% * min(3, var(--slide-count)));
+  }
+}

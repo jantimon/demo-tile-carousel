@@ -1,0 +1,10 @@
+node_modules/
+.swc/
+.vite/
+*.tsbuildinfo
+*.log
+
+.DS_Store
+
+# dist/ is deliberately NOT ignored: GitHub Pages serves the built yak demos
+# straight from the repo.
