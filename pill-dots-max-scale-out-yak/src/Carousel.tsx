@@ -8,9 +8,15 @@ const PILL_WIDTH = 28;
 const DOT_GAP = 8;
 const DOTS_PADDING = 16;
 
+/* how many dots the window shows at once, and the slot the pill rests on away
+   from the ends: 3rd of 5 */
+const MAX_DOTS = 5;
+const CENTRE = (MAX_DOTS + 1) / 2;
+
 /* how far apart two dots sit, and the extra room a pill asks for */
 const PITCH = DOT_SIZE + DOT_GAP;
 const EXTRA = PILL_WIDTH - DOT_SIZE;
+const WINDOW_WIDTH = MAX_DOTS * DOT_SIZE + (MAX_DOTS - 1) * DOT_GAP + EXTRA;
 
 /* The scroll position is the clock: --carousel runs 0% at the first slide to
    100% at the last. Root publishes the name with timeline-scope so the dots —
@@ -114,37 +120,34 @@ const shiftAnimation = keyframes`
   }
 `;
 
-/* The window holds maxDots slots plus the room a pill needs, and a margin of one
+/* The window holds MAX_DOTS slots plus the room a pill needs, and a margin of one
    gap on each side. A dot only starts shrinking once it has been pushed off the
    last slot, so that margin is the one place a shrinking dot is ever seen.
    overflow clips at the padding box, so whatever sits in there is still drawn. */
-const Dots = styled.div<{ $maxDots: number }>`
+const Dots = styled.div`
   height: ${DOT_SIZE}px;
   margin-inline: auto;
   margin-block: ${DOTS_PADDING}px;
   padding-inline: ${DOT_GAP}px;
   overflow: hidden;
-  width: ${({ $maxDots }) =>
-    `${$maxDots * DOT_SIZE + ($maxDots - 1) * DOT_GAP + EXTRA}px`};
+  width: ${WINDOW_WIDTH}px;
 `;
 
 /* Holds still until the pill has walked out to the middle slot, then slides one
    pitch per slide, then holds again for the last slots. Those two holds are what
    put the first two and the last two pills on the outer positions. */
-const Strip = styled.div<{ $slideCount: number; $maxDots: number }>`
+const Strip = styled.div<{ $slideCount: number }>`
   position: relative;
   height: ${DOT_SIZE}px;
   width: ${({ $slideCount }) =>
     `${$slideCount * DOT_SIZE + ($slideCount - 1) * DOT_GAP + EXTRA}px`};
-  --shift: ${({ $slideCount, $maxDots }) =>
-    `${-($slideCount - $maxDots) * PITCH}px`};
+  --shift: ${({ $slideCount }) => `${-($slideCount - MAX_DOTS) * PITCH}px`};
 
   animation: ${shiftAnimation} linear both;
   animation-timeline: --carousel;
-  animation-range: ${({ $slideCount, $maxDots }) => {
+  animation-range: ${({ $slideCount }) => {
     const step = 100 / ($slideCount - 1);
-    const centre = ($maxDots + 1) / 2;
-    return `${((centre - 1) * step).toFixed(3)}% ${(($slideCount - centre) * step).toFixed(3)}%`;
+    return `${((CENTRE - 1) * step).toFixed(3)}% ${(($slideCount - CENTRE) * step).toFixed(3)}%`;
   }};
 `;
 
@@ -153,21 +156,20 @@ const Strip = styled.div<{ $slideCount: number; $maxDots: number }>`
    range clamps at both ends because the scroll cannot run past the first or last
    slide; the two fade ramps are one step long and sit outside the window, so a
    dot holds full size right up to the moment it is pushed off the last slot. */
-const ranges = (index: number, slideCount: number, maxDots: number) => {
+const ranges = (index: number, slideCount: number) => {
   const step = 100 / (slideCount - 1);
-  const centre = (maxDots + 1) / 2;
   const span = (from: number, to: number) =>
     `${(from * step).toFixed(3)}% ${(to * step).toFixed(3)}%`;
   return [
     span(Math.max(0, index - 1), Math.min(slideCount - 1, index + 1)),
     span(Math.max(0, index - 1), index),
-    span(index + centre - maxDots - 1, index + centre - maxDots),
-    span(index + centre - 1, index + centre),
+    span(index + CENTRE - MAX_DOTS - 1, index + CENTRE - MAX_DOTS),
+    span(index + CENTRE - 1, index + CENTRE),
   ].join(", ");
 };
 
-/* Which animations a dot actually needs. The first maxDots dots are on screen
-   from the very first slide, so they have no arrival to play; the last maxDots
+/* Which animations a dot actually needs. The first MAX_DOTS dots are on screen
+   from the very first slide, so they have no arrival to play; the last MAX_DOTS
    never leave. Nothing is ever left of the very first dot, so it is never
    pushed either. */
 const startDot = css`
@@ -191,7 +193,6 @@ type Role = "first" | "last" | "start" | "end" | "middle";
 const Dot = styled.div<{
   $index: number;
   $slideCount: number;
-  $maxDots: number;
   $role: Role;
 }>`
   position: absolute;
@@ -208,8 +209,7 @@ const Dot = styled.div<{
     ${fadeInAnimation} linear both,
     ${fadeOutAnimation} linear both;
   animation-timeline: --carousel, --carousel, --carousel, --carousel;
-  animation-range: ${({ $index, $slideCount, $maxDots }) =>
-    ranges($index, $slideCount, $maxDots)};
+  animation-range: ${({ $index, $slideCount }) => ranges($index, $slideCount)};
 
   ${({ $role }) => $role === "start" && startDot};
   ${({ $role }) => $role === "end" && endDot};
@@ -217,36 +217,33 @@ const Dot = styled.div<{
   ${({ $role }) => $role === "last" && lastDot};
 `;
 
-const roleOf = (index: number, slideCount: number, maxDots: number): Role => {
+const roleOf = (index: number, slideCount: number): Role => {
   if (index === 0) return "first";
   if (index === slideCount - 1) return "last";
-  if (index < maxDots) return "start";
-  if (index >= slideCount - maxDots) return "end";
+  if (index < MAX_DOTS) return "start";
+  if (index >= slideCount - MAX_DOTS) return "end";
   return "middle";
 };
 
 export const Carousel = ({
   slideCount,
-  maxDots,
   children,
 }: {
   slideCount: number;
-  maxDots: number;
   children: ReactNode;
 }) => (
   <Root>
     <Track tabIndex={0} aria-label="Product images">
       {children}
     </Track>
-    <Dots $maxDots={maxDots} aria-hidden="true">
-      <Strip $slideCount={slideCount} $maxDots={maxDots}>
+    <Dots aria-hidden="true">
+      <Strip $slideCount={slideCount}>
         {Array.from({ length: slideCount }, (_, i) => (
           <Dot
             key={i}
             $index={i}
             $slideCount={slideCount}
-            $maxDots={maxDots}
-            $role={roleOf(i, slideCount, maxDots)}
+            $role={roleOf(i, slideCount)}
           />
         ))}
       </Strip>
