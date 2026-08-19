@@ -1,26 +1,33 @@
 import { css, keyframes, styled } from "next-yak";
 import type { ReactNode } from "react";
 
-/* Plain numbers, not custom properties: yak inlines them into the extracted
-   CSS at build time. */
+/* These are plain numbers rather than custom properties so that yak can inline
+   them into the extracted CSS at build time. */
+
+/** Diameter of a dot at rest. */
 const DOT_SIZE = 8;
+/** Width the active dot grows to. */
 const PILL_WIDTH = 28;
+/** Space between two neighbouring dots. */
 const DOT_GAP = 8;
+/** Space above and below the dot row. */
 const DOTS_PADDING = 16;
-
-/* how many dots the window shows at once, and the slot the pill rests on away
-   from the ends: 3rd of 5 */
+/** How many dots the window shows at once. */
 const MAX_DOTS = 5;
+/** The slot the pill rests on away from the ends: 3rd of 5. */
 const CENTRE = (MAX_DOTS + 1) / 2;
-
-/* how far apart two dots sit, and the extra room a pill asks for */
+/** How far apart two neighbouring dots sit, leading edge to leading edge. */
 const PITCH = DOT_SIZE + DOT_GAP;
+/** The extra room a pill takes over a plain dot. */
 const EXTRA = PILL_WIDTH - DOT_SIZE;
+/** Width of the window: MAX_DOTS slots, plus room for the pill among them. */
 const WINDOW_WIDTH = MAX_DOTS * DOT_SIZE + (MAX_DOTS - 1) * DOT_GAP + EXTRA;
 
-/* The scroll position is the clock: --carousel runs 0% at the first slide to
-   100% at the last. Root publishes the name with timeline-scope so the dots —
-   siblings of the track, not children — can read it. */
+/**
+ * The scroller, and the clock everything else runs on.
+ *
+ * --carousel reads 0% at the first slide and 100% at the last.
+ */
 const Track = styled.ul`
   display: flex;
   margin: 0;
@@ -46,6 +53,7 @@ const Track = styled.ul`
   }
 `;
 
+/** One slide. Full width, and the snap target the scroll settles on. */
 export const CarouselSlide = styled.li`
   flex: 0 0 100%;
   scroll-snap-align: center;
@@ -57,13 +65,12 @@ export const CarouselSlide = styled.li`
   font: 2rem/1 system-ui, sans-serif;
 `;
 
+/** Publishes --carousel to the whole subtree, so the dots can read it too. */
 const Root = styled.div`
   timeline-scope: --carousel;
 `;
 
-/* A dot passes through the peak halfway through its window. The first and last
-   dot only ever see half a window — the scroll stops there — so they start or
-   end at the peak instead of passing through it. */
+/** A dot swells to a pill halfway through its window, then shrinks back. */
 const pillAnimation = keyframes`
   50% {
     width: ${PILL_WIDTH}px;
@@ -71,6 +78,7 @@ const pillAnimation = keyframes`
   }
 `;
 
+/** For the first dot, which starts at the peak: the scroll cannot run earlier. */
 const pillOutAnimation = keyframes`
   from {
     width: ${PILL_WIDTH}px;
@@ -78,6 +86,7 @@ const pillOutAnimation = keyframes`
   }
 `;
 
+/** For the last dot, which ends at the peak: the scroll cannot run later. */
 const pillInAnimation = keyframes`
   to {
     width: ${PILL_WIDTH}px;
@@ -85,8 +94,12 @@ const pillInAnimation = keyframes`
   }
 `;
 
-/* A dot stands one EXTRA to the right for as long as the pill is somewhere to
-   its left, and gives that offset up exactly as the pill arrives on it. */
+/**
+ * Steps a dot aside to make room for a pill on its left.
+ *
+ * It stands one EXTRA to the right for as long as the pill is anywhere to its
+ * left, and gives that offset up exactly as the pill arrives on it.
+ */
 const pushAnimation = keyframes`
   from {
     translate: ${EXTRA}px;
@@ -96,34 +109,41 @@ const pushAnimation = keyframes`
   }
 `;
 
-/* fadeIn animates `scale` and fadeOut animates `transform`, on purpose: they
-   are two properties, so both can hold a value at once. Two animations on the
-   same property would not work — the later one wins outright, at every moment,
-   not just inside its own range. */
+/**
+ * Grows a dot in as it arrives at the window edge.
+ *
+ * This animates `scale` while fadeOut animates `transform`, on purpose: they are
+ * two properties, so both can hold a value at once. Two animations on the same
+ * property would not work — the later one wins outright, at every moment, not
+ * just inside its own range.
+ */
 const fadeInAnimation = keyframes`
   from {
     scale: 0;
   }
 `;
 
+/** Shrinks a dot away once it has been pushed off the last slot. */
 const fadeOutAnimation = keyframes`
   to {
     transform: scale(0);
   }
 `;
 
-/* How far the strip travels depends on the slide count, and keyframes are
-   static — so the distance arrives as a custom property. */
+/** Slides the strip left by --shift, which Strip works out from the count. */
 const shiftAnimation = keyframes`
   to {
     translate: var(--shift);
   }
 `;
 
-/* The window holds MAX_DOTS slots plus the room a pill needs, and a margin of one
-   gap on each side. A dot only starts shrinking once it has been pushed off the
-   last slot, so that margin is the one place a shrinking dot is ever seen.
-   overflow clips at the padding box, so whatever sits in there is still drawn. */
+/**
+ * The window the strip slides under, with a margin of one gap on each side.
+ *
+ * A dot only starts shrinking once it has been pushed off the last slot, so that
+ * margin is the one place a shrinking dot is ever seen. overflow clips at the
+ * padding box, so whatever sits in the margin is still drawn.
+ */
 const Dots = styled.div`
   height: ${DOT_SIZE}px;
   margin-inline: auto;
@@ -133,29 +153,55 @@ const Dots = styled.div`
   width: ${WINDOW_WIDTH}px;
 `;
 
-/* Holds still until the pill has walked out to the middle slot, then slides one
-   pitch per slide, then holds again for the last slots. Those two holds are what
-   put the first two and the last two pills on the outer positions. */
+/**
+ * The full row of dots, sliding one pitch per slide under the window.
+ *
+ * It holds still until the pill has walked out to the centre slot, and holds
+ * again once the last slots are in view. Those two holds are what put the first
+ * two and the last two pills on the outer positions.
+ */
 const Strip = styled.div<{ $slideCount: number }>`
   position: relative;
   height: ${DOT_SIZE}px;
-  width: ${({ $slideCount }) =>
-    `${$slideCount * DOT_SIZE + ($slideCount - 1) * DOT_GAP + EXTRA}px`};
-  --shift: ${({ $slideCount }) => `${-($slideCount - MAX_DOTS) * PITCH}px`};
+
+  /* Every dot but the last takes up one pitch; the last slot has to hold a full
+     pill rather than a dot. */
+  width: calc(
+    (${({ $slideCount }) => $slideCount} - 1) * ${PITCH}px + ${PILL_WIDTH}px
+  );
+
+  /* Slides that don't fit in the window are the ones the strip has to travel
+     past, one pitch each. Negative, because it moves left.
+
+     It has to travel as a custom property: the distance belongs to the keyframes,
+     and a keyframes block is static — it is written once for the whole document
+     and cannot see any component's props. */
+  --shift: calc((${MAX_DOTS} - ${({ $slideCount }) => $slideCount}) * ${PITCH}px);
 
   animation: ${shiftAnimation} linear both;
   animation-timeline: --carousel;
-  animation-range: ${({ $slideCount }) => {
-    const step = 100 / ($slideCount - 1);
-    return `${((CENTRE - 1) * step).toFixed(3)}% ${(($slideCount - CENTRE) * step).toFixed(3)}%`;
-  }};
+
+  /* One slide of scroll is 100% / (count - 1) of the timeline — call it a step.
+     The strip waits while the pill walks out to the centre slot, which takes
+     CENTRE - 1 steps, and stops again CENTRE steps from the end so the pill can
+     walk the rest of the way to the last slot on its own. */
+  animation-range:
+    calc((${CENTRE} - 1) * 100% / (${({ $slideCount }) => $slideCount} - 1))
+    calc(
+      (${({ $slideCount }) => $slideCount} - ${CENTRE}) * 100% /
+        (${({ $slideCount }) => $slideCount} - 1)
+    );
 `;
 
-/* One slide of scroll is one step, and indices are 0-based, so dot i peaks at i
-   steps. Four ranges in the order the animations are listed below. The pill
-   range clamps at both ends because the scroll cannot run past the first or last
-   slide; the two fade ramps are one step long and sit outside the window, so a
-   dot holds full size right up to the moment it is pushed off the last slot. */
+/**
+ * The four animation ranges for one dot, in the order Dot lists its animations.
+ *
+ * One slide of scroll is one step and indices are 0-based, so dot i peaks at i
+ * steps. The pill range clamps at both ends because the scroll cannot run past
+ * the first or last slide. The two fade ramps are one step long and sit outside
+ * the window, so a dot holds full size right up to the moment it is pushed off
+ * the last slot.
+ */
 const ranges = (index: number, slideCount: number) => {
   const step = 100 / (slideCount - 1);
   const span = (from: number, to: number) =>
@@ -168,28 +214,30 @@ const ranges = (index: number, slideCount: number) => {
   ].join(", ");
 };
 
-/* Which animations a dot actually needs. The first MAX_DOTS dots are on screen
-   from the very first slide, so they have no arrival to play; the last MAX_DOTS
-   never leave. Nothing is ever left of the very first dot, so it is never
-   pushed either. */
+/** On screen from the very first slide, so it has no arrival to play. */
 const startDot = css`
   animation-name: ${pillAnimation}, ${pushAnimation}, none, ${fadeOutAnimation};
 `;
 
+/** Still on screen at the last slide, so it never leaves. */
 const endDot = css`
   animation-name: ${pillAnimation}, ${pushAnimation}, ${fadeInAnimation}, none;
 `;
 
+/** Starts at the peak, and is never pushed — nothing is ever to its left. */
 const firstDot = css`
   animation-name: ${pillOutAnimation}, none, none, ${fadeOutAnimation};
 `;
 
+/** Ends at the peak, and never leaves the window. */
 const lastDot = css`
   animation-name: ${pillInAnimation}, ${pushAnimation}, ${fadeInAnimation}, none;
 `;
 
+/** Where a dot sits in the run, which decides the animations it needs. */
 type Role = "first" | "last" | "start" | "end" | "middle";
 
+/** One dot. Absolutely placed, so no dot's width can shift another. */
 const Dot = styled.div<{
   $index: number;
   $slideCount: number;
@@ -217,6 +265,7 @@ const Dot = styled.div<{
   ${({ $role }) => $role === "last" && lastDot};
 `;
 
+/** Works out a dot's role from its index. */
 const roleOf = (index: number, slideCount: number): Role => {
   if (index === 0) return "first";
   if (index === slideCount - 1) return "last";
@@ -225,6 +274,7 @@ const roleOf = (index: number, slideCount: number): Role => {
   return "middle";
 };
 
+/** A scroll-snapping carousel with a windowed pill indicator under it. */
 export const Carousel = ({
   slideCount,
   children,
