@@ -14,16 +14,20 @@
   h1 { font-size: 1.5rem; margin-bottom: 0.25rem }
   header p { margin-top: 0; color: #666; max-width: 40rem }
   /* min() so a narrow phone can't push a 20rem column past the viewport */
-  ul { display: grid; gap: 1.5rem; list-style: none; padding: 0;
+  .demos { display: grid; gap: 1.5rem; list-style: none; padding: 0;
        grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr)) }
   /* Each card takes its two rows from the parent grid, so headings of one and
      two lines still leave every frame starting on the same line. */
-  li { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: 0;
+  .demos li { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: 0;
        border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background: #fff }
   h2 { font-size: 1rem; margin: 0 }
   h2 a { color: inherit }
   .about { margin: 0.25rem 0 0; color: #666; font-size: 0.875rem }
   .head { padding: 0.875rem 1rem }
+  .bugs { margin-top: 2.5rem }
+  .bugs h2 { font-size: 1.125rem; margin: 0 0 0.5rem }
+  .bugs ul { padding-left: 1.25rem; color: #666; max-width: 44rem }
+  .bugs li { margin-bottom: 0.35rem }
   iframe { display: block; width: 100%; height: 380px; border: 0; border-top: 1px solid #eee }
 </style>
 
@@ -34,7 +38,7 @@
   loop instead.</p>
 </header>
 
-<ul>
+<ul class="demos">
   <li>
     <div class="head">
       <h2><a href="base/">base</a></h2>
@@ -106,12 +110,16 @@
     </div>
     <iframe src="pill-dots-max-scale-out-yak/dist/" title="pill-dots-max-scale-out-yak" loading="lazy"></iframe>
   </li>
-
-  <li>
-    <div class="head">
-      <h2><a href="content-visibility/">content-visibility</a></h2>
-      <p class="about">80 tiles of unpredictable height. Toggle containment and watch the page height drift.</p>
-    </div>
-    <iframe src="content-visibility/" title="content-visibility" loading="lazy"></iframe>
-  </li>
 </ul>
+
+<section class="bugs">
+  <h2>Browser bugs found along the way</h2>
+  <ul>
+    <li><a href="safari-bug/">Safari</a> (STP 249, WebKit 21626.1.1) — one
+      <code>scroll-timeline</code> name shared by many tiles gets slow fast:
+      1000 tiles take 14538 ms, against 207 ms when each tile names its own.</li>
+    <li><a href="firefox-bug/firefox-bug.gif">Firefox</a> (156.0a1) — only the
+      first of an element's scroll-driven animations runs, so dots overlap the
+      growing pill instead of stepping aside.</li>
+  </ul>
+</section>

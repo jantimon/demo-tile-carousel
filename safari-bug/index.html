@@ -1,0 +1,53 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Shared scroll-timeline name — WebKit performance isolate</title>
+<!--
+  Performance Bug Reproduction for Scroll Timelines
+
+    ?mode=shared   every tile uses the same name — slow in WebKit, flat in Blink
+    ?mode=unique   every tile uses its own name  — flat in both
+-->
+
+<style>
+  .scroller { overflow-x: auto; width: 100px }
+  .content  { width: 300px; height: 20px }
+  @keyframes fade { to { opacity: 0 } }
+  .dot { animation: fade linear both }
+</style>
+
+<div id="app"></div>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const tiles  = Number(params.get("tiles") || 300);
+  const unique = params.get("mode") !== "shared";
+
+  // Generate timeline elements
+  let html = "";
+  for (let i = 0; i < tiles; i++) {
+    const name = unique ? `--t${i}` : `--t`;
+    html += `<div style="timeline-scope:${name}">
+               <div class="scroller" style="scroll-timeline:${name} inline"><div class="content"></div></div>
+               <span class="dot" style="animation-timeline:${name}"></span>
+             </div>`;
+  }
+
+  // Measure insert and render duration
+  const start = performance.now();
+  document.getElementById("app").innerHTML = html;
+  document.body.offsetHeight;                       // force style + layout
+  const ms = Math.round(performance.now() - start);
+
+  // Output results
+  const timeline = (document.getAnimations()[0] || {}).timeline;
+  const out = document.createElement("div");
+  out.style.cssText = "font: 16px/1.6 -apple-system, system-ui, sans-serif; padding: 1rem; position: fixed; inset: 0";
+  out.innerHTML =
+    `<b>${ms} ms</b> — ${tiles} tiles, ${unique ? "unique" : "shared"} name, `
+    + `${document.getAnimations().length} animations, `
+    // must read ScrollTimeline — if it reads null the timelines never resolved
+    + `timeline bound: ${timeline ? timeline.constructor.name : "null"}<br>`
+    + `<a href="?tiles=${tiles}&mode=${unique ? "shared" : "unique"}">test ${unique ? "1 single shared" : tiles + " different"} scroll-timeline name${unique ? "" : "s"}</a>` +
+    [100, 300, 600, 1000].map(n => `<br /><a href="?tiles=${n}&mode=${unique ? "unique" : "shared"}">test ${n} scroll-timelines</a>`).join(" ");
+  document.body.appendChild(out);
+</script>
