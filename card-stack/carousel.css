@@ -1,0 +1,49 @@
+/* A slide is a third of the frame, and the track is padded by another third
+   each side so the first and last can still reach the centre. That ratio is
+   what makes one snap step exactly a quarter of a slide's view timeline, which
+   is where every keyframe in deck.css comes from.
+
+   The percentage padding resolves against .carousel, leaving the track a
+   content box one third as wide — so the slides can stay at flex: 0 0 100%. */
+
+.carousel {
+  /* The deck stands 0.689 frames tall (155% of a third, at 3:4) and no part of
+     it scales on its own, so a short box narrows the frame instead. */
+  max-width: min(34rem, calc((100svh - 3.5rem) / 0.689));
+  margin-inline: auto;
+}
+
+.track {
+  display: flex;
+  margin: 0;
+  padding-inline: 33.3333%;
+  /* Shadow room, counted back out of the frame height above. */
+  padding-block: 1.5rem 2rem;
+  list-style: none;
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  overscroll-behavior-inline: contain;
+
+  scrollbar-width: none;
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+.track > li {
+  flex: 0 0 100%;
+  scroll-snap-align: center;
+
+  /* The card overhangs both edges of its slide — that overlap is the deck.
+     Centring it also drops it on the perspective's vanishing point. */
+  display: grid;
+  place-items: center;
+  perspective: 60rem;
+
+  /* 0% as the slide's leading edge meets the right of the frame, 50% dead
+     centre, 100% as it leaves on the left. */
+  view-timeline: --card inline;
+}

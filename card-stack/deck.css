@@ -1,0 +1,135 @@
+/* A slide's view timeline spans the frame plus the slide, four thirds of a
+   frame, so one snap step is a quarter of it. Resting poses land on 0, 25, 50,
+   75 and 100%, halfway through a swipe on 12.5, 37.5, 62.5 and 87.5%.
+
+   Each card does all its travelling in one half of a swipe. The one leaving
+   the centre is parked in the neighbour slot by the halfway point; the one
+   arriving waits there until then and crosses in the second half. So halfway
+   through, the deck stands open — two cards side by side, square, with a gap
+   between them. That is where the paint order changes, and it is the whole
+   reason the deck opens: two cards that do not touch swap without a pop.
+
+   The gap has to clear the shadows as well as the cards. A shadow reaches
+   about half its blur sideways, so card.css keeps the widest blur below it. */
+
+.card {
+  /* The deck has three places: the centre and one slot each side. Anything
+     further back stacks up in the same slot, deeper and darker, so no card
+     ever reaches the edge of the frame and gets its corner clipped. */
+  --slot-near: -20.1%;
+  --slot-far: -107.5%;
+
+  /* A parked card still has the frame scrolling under it. Holding it in place
+     costs half a slide of travel back, which in card widths comes to this. */
+  --hold-near: 37.3%;
+  --hold-far: 42.3%;
+
+  --tilt-near: 5deg;
+  --tilt-far: 8deg;
+
+  animation: deal linear both;
+  animation-timeline: --card;
+}
+
+/* A card is square while it moves and tilts only once it is parked. */
+@keyframes deal {
+  /* the slot, one card deeper */
+  0% {
+    transform: translateX(var(--slot-far)) rotate(var(--tilt-far)) translateZ(-300px);
+  }
+  /* held */
+  12.5% {
+    transform:
+      translateX(calc(var(--slot-far) + var(--hold-far)))
+      rotate(var(--tilt-far))
+      translateZ(-300px);
+  }
+  /* the slot */
+  25% {
+    transform: translateX(var(--slot-near)) rotate(var(--tilt-near)) translateZ(-150px);
+  }
+  /* held, square */
+  37.5% {
+    transform:
+      translateX(calc(var(--slot-near) + var(--hold-near)))
+      rotate(0deg)
+      translateZ(-150px);
+  }
+  /* centre */
+  50% {
+    transform: translateX(0) rotate(0deg) translateZ(0);
+  }
+  62.5% {
+    transform:
+      translateX(calc(-1 * var(--slot-near) - var(--hold-near)))
+      rotate(0deg)
+      translateZ(-150px);
+  }
+  75% {
+    transform: translateX(calc(-1 * var(--slot-near))) rotate(calc(-1 * var(--tilt-near))) translateZ(-150px);
+  }
+  87.5% {
+    transform:
+      translateX(calc(-1 * var(--slot-far) - var(--hold-far)))
+      rotate(calc(-1 * var(--tilt-far)))
+      translateZ(-300px);
+  }
+  100% {
+    transform: translateX(calc(-1 * var(--slot-far))) rotate(calc(-1 * var(--tilt-far))) translateZ(-300px);
+  }
+}
+
+/* z-index interpolates as an integer, so this is a ramp rather than a switch
+   at 50%. Two neighbours run it a quarter of a timeline apart, so their values
+   cross halfway through a swipe — where the deck stands open. */
+.track > li {
+  animation: stack linear both;
+  animation-timeline: --card;
+}
+
+@keyframes stack {
+  0% {
+    z-index: 1;
+  }
+  50% {
+    z-index: 100;
+  }
+  100% {
+    z-index: 1;
+  }
+}
+
+/* Shade, parked and travelling on the same halves as the card carrying it. An
+   overlay composites; a filter on the card would repaint it every frame and
+   dim its shadow along with its face. */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #0b0d10;
+  pointer-events: none;
+
+  animation: recede linear both;
+  animation-timeline: --card;
+}
+
+@keyframes recede {
+  0%, 12.5%, 87.5%, 100% {
+    opacity: 0.6;
+  }
+  25%, 37.5%, 62.5%, 75% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* The deal stays — it is what keeps the swap out of sight. The fan does not. */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    --tilt-near: 0deg;
+    --tilt-far: 0deg;
+  }
+}

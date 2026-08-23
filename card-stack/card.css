@@ -1,0 +1,83 @@
+body {
+  margin: 0;
+  min-height: 100svh;
+  /* align-content on a block box, so the carousel keeps a definite width. Made
+     a flex or grid item of it, its auto side margins would stop it stretching
+     and the track's percentage padding would collapse to nothing. */
+  align-content: center;
+  background: #f4f1ec;
+  font-family: system-ui, sans-serif;
+}
+
+.card {
+  position: relative;
+  width: 155%;
+  aspect-ratio: 3 / 4;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  background: #fff;
+  /* The transform carries all three layers, so the shadow shrinks with the
+     card and never needs repainting. The widest blur is capped by the gap the
+     deck opens up to swap two cards over — see deck.css. */
+  box-shadow:
+    0 1px 2px rgb(20 14 8 / 0.18),
+    0 4px 8px rgb(20 14 8 / 0.14),
+    0 8px 16px rgb(20 14 8 / 0.20);
+}
+
+/* Swap the div for <img class="media" src="…" alt="…"> and nothing else has to
+   change. */
+.media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.track > li:nth-child(1) .media {
+  background: linear-gradient(150deg, #d8c58f, #9c7b3f 55%, #5c4620);
+}
+
+.track > li:nth-child(2) .media {
+  background: linear-gradient(150deg, #c6d99a, #6f8f47 55%, #35471f);
+}
+
+.track > li:nth-child(3) .media {
+  background: linear-gradient(150deg, #e8b287, #c06a3c 55%, #6b2f1a);
+}
+
+.badge {
+  position: absolute;
+  inset: 0.875rem auto auto 0.875rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.92);
+  color: #2b2620;
+  font: 600 0.6875rem/1 system-ui, sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.caption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 3rem 1.125rem 1.125rem;
+  background: linear-gradient(to top, rgb(14 11 8 / 0.8), rgb(14 11 8 / 0));
+  color: #fff;
+}
+
+.caption h2 {
+  margin: 0;
+  font: 600 1.25rem/1.15 system-ui, sans-serif;
+}
+
+.caption p {
+  margin: 0.25rem 0 0;
+  font: 0.8125rem/1.3 system-ui, sans-serif;
+  color: rgb(255 255 255 / 0.78);
+}
+
+.track:focus-visible {
+  outline: 2px solid #0b5cff;
+  outline-offset: -2px;
+}
