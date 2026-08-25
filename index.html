@@ -18,18 +18,44 @@
        grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr)) }
   /* Each card takes its two rows from the parent grid, so headings of one and
      two lines still leave every frame starting on the same line. */
-  .demos li { display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: 0;
-       border: 1px solid #ddd; border-radius: 10px; overflow: hidden; background: #fff }
+  .demos li { position: relative;
+       display: grid; grid-template-rows: subgrid; grid-row: span 2; row-gap: 0;
+       border-radius: 12px; overflow: hidden; background: #fff;
+       box-shadow: 0 0 0 1px rgb(16 24 40 / 0.06),
+                   0 1px 2px rgb(16 24 40 / 0.06),
+                   0 12px 28px -10px rgb(16 24 40 / 0.22) }
   h2 { font-size: 1rem; margin: 0 }
   h2 a { color: inherit }
   .about { margin: 0.25rem 0 0; color: #666; font-size: 0.875rem }
-  .head { padding: 0.875rem 1rem }
+  /* Right padding keeps the heading clear of the tab above it. */
+  .head { padding: 0.875rem 1rem; padding-right: 9.5rem }
+  /* Sits in the card's own top-right corner, folder-tab style. */
+  .source { position: absolute; top: 0; right: 0;
+       display: flex; align-items: center; gap: 0.45rem;
+       padding: 0.55rem 0.85rem;
+       border-left: 1px solid #eaecf0; border-bottom: 1px solid #eaecf0;
+       border-bottom-left-radius: 12px;
+       color: #475467; text-decoration: none;
+       font-size: 0.8125rem; font-weight: 600 }
+  .source:hover { color: #101828; background: #f9fafb }
+  .gh { width: 1.125rem; height: 1.125rem; fill: currentColor }
+  /* Too narrow for the words — the mark alone still says where it goes. */
+  @media (max-width: 26rem) {
+    .source span { display: none }
+    .head { padding-right: 3.75rem }
+  }
   .bugs { margin-top: 2.5rem }
   .bugs h2 { font-size: 1.125rem; margin: 0 0 0.5rem }
   .bugs ul { padding-left: 1.25rem; color: #666; max-width: 44rem }
   .bugs li { margin-bottom: 0.35rem }
   iframe { display: block; width: 100%; height: 380px; border: 0; border-top: 1px solid #eee }
 </style>
+
+<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+  <symbol id="github" viewBox="0 0 48 48">
+    <path d="M24,1.9a21.6,21.6,0,0,0-6.8,42.2c1,.2,1.8-.9,1.8-1.8V39.4c-6,1.3-7.9-2.9-7.9-2.9a6.5,6.5,0,0,0-2.2-3.2C6.9,31.9,9,32,9,32a4.3,4.3,0,0,1,3.3,2c1.7,2.9,5.5,2.6,6.7,2.1a5.4,5.4,0,0,1,.5-2.9C12.7,32,9,28,9,22.6A10.7,10.7,0,0,1,11.9,15a6.2,6.2,0,0,1,.3-6.4,8.9,8.9,0,0,1,6.4,2.9,15.1,15.1,0,0,1,5.4-.8,17.1,17.1,0,0,1,5.4.7,9,9,0,0,1,6.4-2.8,6.5,6.5,0,0,1,.4,6.4A10.7,10.7,0,0,1,39,22.6C39,28,35.3,32,28.5,33.2a5.4,5.4,0,0,1,.5,2.9v6.2a1.8,1.8,0,0,0,1.9,1.8A21.7,21.7,0,0,0,24,1.9Z"></path>
+  </symbol>
+</svg>
 
 <header>
   <h1>Carousel demos</h1>
@@ -41,81 +67,102 @@
 <ul class="demos">
   <li>
     <div class="head">
-      <h2><a href="base/">base</a></h2>
+      <h2><a href="base">base</a></h2>
       <p class="about">Pill glides with the finger. One scroll-driven animation.</p>
     </div>
-    <iframe src="base/" title="base"></iframe>
+    <a class="source" href="https://github.com/jantimon/demo-tile-carousel/tree/main/base" target="_blank" rel="noopener"
+       aria-label="Source code for base on GitHub"><span>Source code</span>
+      <svg class="gh" aria-hidden="true"><use href="#github"></use></svg></a>
+    <iframe src="base" title="base"></iframe>
   </li>
-
   <li>
     <div class="head">
-      <h2><a href="steps/">steps</a></h2>
+      <h2><a href="steps">steps</a></h2>
       <p class="about">Pill jumps dot to dot at the halfway point, via steps() easing.</p>
     </div>
-    <iframe src="steps/" title="steps"></iframe>
+    <a class="source" href="https://github.com/jantimon/demo-tile-carousel/tree/main/steps" target="_blank" rel="noopener"
+       aria-label="Source code for steps on GitHub"><span>Source code</span>
+      <svg class="gh" aria-hidden="true"><use href="#github"></use></svg></a>
+    <iframe src="steps" title="steps"></iframe>
   </li>
-
   <li>
     <div class="head">
-      <h2><a href="responsive/">responsive</a></h2>
+      <h2><a href="responsive">responsive</a></h2>
       <p class="about">Touch: swipe with dots. Pointer: hover previews the first three images.</p>
     </div>
-    <iframe src="responsive/" title="responsive" loading="lazy"></iframe>
+    <a class="source" href="https://github.com/jantimon/demo-tile-carousel/tree/main/responsive" target="_blank" rel="noopener"
+       aria-label="Source code for responsive on GitHub"><span>Source code</span>
+      <svg class="gh" aria-hidden="true"><use href="#github"></use></svg></a>
+    <iframe src="responsive" title="responsive" loading="lazy"></iframe>
   </li>
-
   <li>
     <div class="head">
-      <h2><a href="pill-dots/">pill-dots</a></h2>
+      <h2><a href="pill-dots">pill-dots</a></h2>
       <p class="about">The active dot is a wide pill. Every dot animates its own width — no overlay.</p>
     </div>
-    <iframe src="pill-dots/" title="pill-dots" loading="lazy"></iframe>
+    <a class="source" href="https://github.com/jantimon/demo-tile-carousel/tree/main/pill-dots" target="_blank" rel="noopener"
+       aria-label="Source code for pill-dots on GitHub"><span>Source code</span>
+      <svg class="gh" aria-hidden="true"><use href="#github"></use></svg></a>
+    <iframe src="pill-dots" title="pill-dots" loading="lazy"></iframe>
   </li>
-
   <li>
     <div class="head">
-      <h2><a href="pill-dots-max/">pill-dots-max</a></h2>
+      <h2><a href="pill-dots-max">pill-dots-max</a></h2>
       <p class="about">Ten slides, five dots. The strip slides under a fixed window; edges are clipped.</p>
     </div>
-    <iframe src="pill-dots-max/" title="pill-dots-max" loading="lazy"></iframe>
+    <a class="source" href="https://github.com/jantimon/demo-tile-carousel/tree/main/pill-dots-max" target="_blank" rel="noopener"
+       aria-label="Source code for pill-dots-max on GitHub"><span>Source code</span>
+      <svg class="gh" aria-hidden="true"><use href="#github"></use></svg></a>
+    <iframe src="pill-dots-max" title="pill-dots-max" loading="lazy"></iframe>
   </li>
-
   <li>
     <div class="head">
-      <h2><a href="pill-dots-max-scale/">pill-dots-max-scale</a></h2>
+      <h2><a href="pill-dots-max-scale">pill-dots-max-scale</a></h2>
       <p class="about">Same window, but the outermost dots are half size instead of cut.</p>
     </div>
-    <iframe src="pill-dots-max-scale/" title="pill-dots-max-scale" loading="lazy"></iframe>
+    <a class="source" href="https://github.com/jantimon/demo-tile-carousel/tree/main/pill-dots-max-scale" target="_blank" rel="noopener"
+       aria-label="Source code for pill-dots-max-scale on GitHub"><span>Source code</span>
+      <svg class="gh" aria-hidden="true"><use href="#github"></use></svg></a>
+    <iframe src="pill-dots-max-scale" title="pill-dots-max-scale" loading="lazy"></iframe>
   </li>
-
   <li>
     <div class="head">
-      <h2><a href="pill-dots-max-scale-out/">pill-dots-max-scale-out</a></h2>
+      <h2><a href="pill-dots-max-scale-out">pill-dots-max-scale-out</a></h2>
       <p class="about">Five equal dots at rest. A shrinking one appears in the margin only mid-swipe.</p>
     </div>
-    <iframe src="pill-dots-max-scale-out/" title="pill-dots-max-scale-out" loading="lazy"></iframe>
+    <a class="source" href="https://github.com/jantimon/demo-tile-carousel/tree/main/pill-dots-max-scale-out" target="_blank" rel="noopener"
+       aria-label="Source code for pill-dots-max-scale-out on GitHub"><span>Source code</span>
+      <svg class="gh" aria-hidden="true"><use href="#github"></use></svg></a>
+    <iframe src="pill-dots-max-scale-out" title="pill-dots-max-scale-out" loading="lazy"></iframe>
   </li>
-
   <li>
     <div class="head">
       <h2><a href="pill-dots-yak/dist/">pill-dots-yak</a></h2>
       <p class="about">pill-dots as React components, styled with next-yak. Built output.</p>
     </div>
+    <a class="source" href="https://github.com/jantimon/demo-tile-carousel/tree/main/pill-dots-yak/src" target="_blank" rel="noopener"
+       aria-label="Source code for pill-dots-yak on GitHub"><span>Source code</span>
+      <svg class="gh" aria-hidden="true"><use href="#github"></use></svg></a>
     <iframe src="pill-dots-yak/dist/" title="pill-dots-yak" loading="lazy"></iframe>
   </li>
-
   <li>
     <div class="head">
       <h2><a href="pill-dots-max-scale-out-yak/dist/">pill-dots-max-scale-out-yak</a></h2>
       <p class="about">The windowed scale-out indicator as React + next-yak. Built output.</p>
     </div>
+    <a class="source" href="https://github.com/jantimon/demo-tile-carousel/tree/main/pill-dots-max-scale-out-yak/src" target="_blank" rel="noopener"
+       aria-label="Source code for pill-dots-max-scale-out-yak on GitHub"><span>Source code</span>
+      <svg class="gh" aria-hidden="true"><use href="#github"></use></svg></a>
     <iframe src="pill-dots-max-scale-out-yak/dist/" title="pill-dots-max-scale-out-yak" loading="lazy"></iframe>
   </li>
-
   <li>
     <div class="head">
       <h2><a href="card-stack/">card-stack</a></h2>
       <p class="about">Three cards deep, one perspective each. Paint order swaps at the one instant it cannot be seen.</p>
     </div>
+    <a class="source" href="https://github.com/jantimon/demo-tile-carousel/tree/main/card-stack" target="_blank" rel="noopener"
+       aria-label="Source code for card-stack on GitHub"><span>Source code</span>
+      <svg class="gh" aria-hidden="true"><use href="#github"></use></svg></a>
     <iframe src="card-stack/" title="card-stack" loading="lazy"></iframe>
   </li>
 </ul>
