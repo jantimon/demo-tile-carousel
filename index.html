@@ -172,9 +172,12 @@
   <ul>
     <li><a href="safari-bug/">Safari</a> (STP 249, WebKit 21626.1.1) one
       <code>scroll-timeline</code> name shared by many tiles gets slow fast:
-      1000 tiles block the main thread for 14.5s!</li>
-    <li><a href="firefox-bug/firefox-bug.gif">Firefox</a> (156.0a1) only the
-      first of an element's scroll-driven animations runs, so dots overlap the
-      growing pill instead of stepping aside</li>
+      1000 tiles block the main thread for 14.5s!
+      (<a href="https://bugs.webkit.org/show_bug.cgi?id=322283">WebKit 322283</a>)</li>
+    <li><a href="firefox-bug/firefox-bug.gif">Firefox</a> (156.0a1) animations on
+      <code>translate</code> and <code>scale</code> ignore their
+      <code>animation-range</code> and draw at the wrong point, so the pill
+      breaks up as you scroll.
+      (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=2006260#c2">Mozilla 2006260</a>)</li>
   </ul>
 </section>
