@@ -3,6 +3,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Carousel demos</title>
+<meta name="description" content="Ten carousels whose page indicators are driven by the scroll itself. CSS scroll-timeline, no JavaScript.">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jantimon.github.io/demo-tile-carousel/">
+<meta property="og:title" content="Page indicators that follow your finger">
+<meta property="og:description" content="Ten carousels whose dots are driven by the scroll itself. CSS scroll-timeline, no JavaScript — and the four browser bugs found on the way.">
+<meta property="og:image" content="https://jantimon.github.io/demo-tile-carousel/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A carousel of four slides above a row of dots, the first one grown into a wide pill.">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Page indicators that follow your finger">
+<meta name="twitter:description" content="Ten carousels whose dots are driven by the scroll itself. CSS scroll-timeline, no JavaScript — and the four browser bugs found on the way.">
+<meta name="twitter:image" content="https://jantimon.github.io/demo-tile-carousel/og.png">
+
 <style>
   body {
     font: 16px/1.5 system-ui, sans-serif;
@@ -174,6 +190,15 @@
       <code>scroll-timeline</code> name shared by many tiles gets slow fast:
       1000 tiles block the main thread for 14.5s!
       (<a href="https://bugs.webkit.org/show_bug.cgi?id=322283">WebKit 322283</a>)</li>
+    <li><a href="https://jantimon.github.io/repro-scroller-memory/">Safari</a>
+      (iOS 18 and later) every carousel is a scroll container, and about 200 of
+      them exhaust the WebContent process. The same phone on iOS 17 rendered
+      5000.
+      (<a href="https://bugs.webkit.org/show_bug.cgi?id=322930">WebKit 322930</a>)</li>
+    <li>Safari one <code>scroll-timeline</code> per row drops scrolling to
+      11 fps, even where every name is unique — so giving each tile its own
+      name buys nothing once the list is long.
+      (<a href="https://bugs.webkit.org/show_bug.cgi?id=322931">WebKit 322931</a>)</li>
     <li><a href="firefox-bug/firefox-bug.gif">Firefox</a> (156.0a1) animations on
       <code>translate</code> and <code>scale</code> ignore their
       <code>animation-range</code> and draw at the wrong point, so the pill

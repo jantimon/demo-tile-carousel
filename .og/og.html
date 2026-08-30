@@ -1,0 +1,54 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  /* Authored at 1200x630, shot at 2400x1260 so the PNG is a retina asset. */
+  html { zoom: 2 }
+
+  * { margin: 0; box-sizing: border-box }
+  body {
+    width: 1200px; height: 630px;
+    font: 16px system-ui, sans-serif;
+    background: #fff; color: #101828;
+    padding: 68px 80px 56px;
+    display: grid; grid-template-rows: auto 1fr auto;
+    /* minmax(0, …) so the track running off the edge cannot widen the column
+       and drag the footer out of the canvas with it. */
+    grid-template-columns: minmax(0, 1fr);
+    overflow: hidden;
+  }
+  .kicker { font-size: 22px; font-weight: 600; color: #667085 }
+  h1 { font-size: 66px; line-height: 1.04; letter-spacing: -0.025em; margin: 16px 0 0; max-width: 16ch }
+  h1 b { color: #e8290b }
+
+  .carousel { align-self: center }
+
+  /* Slides run off the right edge, the way they do on a phone. */
+  .track { display: flex; gap: 16px; list-style: none; padding: 0; margin-right: -80px }
+  .track li { flex: 0 0 300px; aspect-ratio: 3 / 2; border-radius: 14px }
+
+  /* The dot row from pill-dots/dots.css, frozen with the pill on slide one. */
+  .dots { --size: 18px; --pill: 62px; --gap: 18px;
+          display: flex; align-items: center; gap: var(--gap);
+          width: fit-content; margin: 30px auto 0 }
+  .dots i { width: var(--size); height: var(--size);
+            border-radius: var(--size); background: #dcdcdc }
+  .dots i:first-child { width: var(--pill); background: #555 }
+
+  footer { display: flex; justify-content: space-between; align-items: baseline;
+           font-size: 22px; color: #667085; border-top: 2px solid #eaecf0; padding-top: 22px }
+  footer b { color: #101828 }
+</style>
+<div>
+  <div class="kicker">CSS · scroll-timeline · no JavaScript</div>
+  <h1>Page indicators that <b>follow your finger</b></h1>
+</div>
+<div class="carousel">
+  <ul class="track">
+    <li style="background: linear-gradient(135deg, hsl(28 45% 82%), hsl(68 45% 68%))"></li>
+    <li style="background: linear-gradient(135deg, hsl(196 45% 82%), hsl(236 45% 68%))"></li>
+    <li style="background: linear-gradient(135deg, hsl(320 45% 82%), hsl(0 45% 68%))"></li>
+    <li style="background: linear-gradient(135deg, hsl(96 45% 82%), hsl(136 45% 68%))"></li>
+  </ul>
+  <div class="dots"><i></i><i></i><i></i><i></i></div>
+</div>
+<footer><span>jantimon.github.io/demo-tile-carousel</span><span><b>10 demos · zero JavaScript</b></span></footer>
