@@ -64,6 +64,7 @@
   .bugs h2 { font-size: 1.125rem; margin: 0 0 0.5rem }
   .bugs ul { padding-left: 1.25rem; color: #666; max-width: 44rem }
   .bugs li { margin-bottom: 0.35rem }
+  .bugs .update { display: block; color: #333 }
   iframe { display: block; width: 100%; height: 380px; border: 0; border-top: 1px solid #eee }
 </style>
 
@@ -189,20 +190,29 @@
     <li><a href="safari-bug/">Safari</a> (STP 249, WebKit 21626.1.1) one
       <code>scroll-timeline</code> name shared by many tiles gets slow fast:
       1000 tiles block the main thread for 14.5s!
-      (<a href="https://bugs.webkit.org/show_bug.cgi?id=322283">WebKit 322283</a>)</li>
+      (<a href="https://bugs.webkit.org/show_bug.cgi?id=322283">WebKit 322283</a>)
+      <span class="update"><strong>Update:</strong> fixed in
+      <a href="https://commits.webkit.org/320902@main">320902@main</a>.</span></li>
     <li><a href="https://jantimon.github.io/repro-scroller-memory/">Safari</a>
       (iOS 18 and later) every carousel is a scroll container, and about 200 of
       them exhaust the WebContent process. The same phone on iOS 17 rendered
       5000.
-      (<a href="https://bugs.webkit.org/show_bug.cgi?id=322930">WebKit 322930</a>)</li>
+      (<a href="https://bugs.webkit.org/show_bug.cgi?id=322930">WebKit 322930</a>)
+      <span class="update"><strong>Update:</strong> confirmed as an iOS 17 → 18
+      regression, still open.</span></li>
     <li>Safari one <code>scroll-timeline</code> per row drops scrolling to
       11 fps, even where every name is unique — so giving each tile its own
       name buys nothing once the list is long.
-      (<a href="https://bugs.webkit.org/show_bug.cgi?id=322931">WebKit 322931</a>)</li>
+      (<a href="https://bugs.webkit.org/show_bug.cgi?id=322931">WebKit 322931</a>)
+      <span class="update"><strong>Update:</strong> already fixed in WebKit trunk
+      (<a href="https://bugs.webkit.org/show_bug.cgi?id=319589">WebKit 319589</a>),
+      59 fps on an iPhone 15.</span></li>
     <li><a href="firefox-bug/firefox-bug.gif">Firefox</a> (156.0a1) animations on
       <code>translate</code> and <code>scale</code> ignore their
       <code>animation-range</code> and draw at the wrong point, so the pill
       breaks up as you scroll.
-      (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=2006260#c2">Mozilla 2006260</a>)</li>
+      (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=2006260#c2">Mozilla 2006260</a>)
+      <span class="update"><strong>Update:</strong> fixed for Firefox 159
+      (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=2066027">Mozilla 2066027</a>).</span></li>
   </ul>
 </section>
